@@ -2,21 +2,21 @@
 import { Form, Head } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
+import SiteButton from '@/components/site/SiteButton.vue';
 import TextLink from '@/components/TextLink.vue';
-import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
-import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 import PasskeyVerify from '@/components/PasskeyVerify.vue';
 
 defineOptions({
     layout: {
-        title: 'Log in to your account',
-        description: 'Enter your email and password below to log in',
+        title: 'Log in',
+        description:
+            'Use the email address and password for your CHICD staff account.',
     },
 });
 
@@ -31,7 +31,8 @@ defineProps<{
 
     <div
         v-if="status"
-        class="mb-4 text-center text-sm font-medium text-green-600"
+        class="mb-6 border-l-4 border-brand-600 bg-brand-50 p-4 text-[0.98rem] text-brand-900 dark:bg-brand-950/60 dark:text-brand-100"
+        role="status"
     >
         {{ status }}
     </div>
@@ -90,21 +91,23 @@ defineProps<{
                 </Label>
             </div>
 
-            <Button
+            <SiteButton
                 type="submit"
-                class="mt-4 w-full"
+                class="mt-2 w-full"
                 :tabindex="4"
                 :disabled="processing"
                 data-test="login-button"
             >
                 <Spinner v-if="processing" />
                 Log in
-            </Button>
+            </SiteButton>
         </div>
 
-        <div class="text-center text-sm text-muted-foreground">
-            Don't have an account?
-            <TextLink :href="register()" :tabindex="5">Sign up</TextLink>
-        </div>
+        <p
+            class="border-t border-border pt-5 text-center text-[0.95rem] text-muted-foreground"
+        >
+            Staff accounts are set up by CHICD. Ask an administrator if you need
+            one.
+        </p>
     </Form>
 </template>

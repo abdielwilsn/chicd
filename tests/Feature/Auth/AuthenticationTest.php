@@ -10,6 +10,21 @@ test('login screen can be rendered', function () {
     $response->assertOk();
 });
 
+test('nobody can sign themselves up for a staff account', function () {
+    $this->get('/register')->assertNotFound();
+
+    $response = $this->post('/register', [
+        'name' => 'Someone',
+        'email' => 'someone@example.com',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+    ]);
+
+    $response->assertNotFound();
+    $this->assertGuest();
+    $this->assertDatabaseMissing('users', ['email' => 'someone@example.com']);
+});
+
 test('users can authenticate using the login screen', function () {
     $user = User::factory()->create();
 

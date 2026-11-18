@@ -1,7 +1,11 @@
 <?php
 
+use App\Http\Controllers\AttendanceHistoryController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EnquiryController;
+use App\Http\Controllers\FieldActivityController;
 use App\Http\Controllers\NewsletterSubscriptionController;
+use App\Http\Controllers\OfficeAttendanceController;
 use App\Http\Controllers\PublicationController;
 use Illuminate\Support\Facades\Route;
 
@@ -62,7 +66,19 @@ Route::middleware('throttle:6,1')->group(function () {
 */
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('dashboard', 'Dashboard')->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
+
+    Route::get('my-attendance', [AttendanceHistoryController::class, 'index'])->name('attendance.index');
+
+    Route::post('office-attendances', [OfficeAttendanceController::class, 'store'])->name('office-attendances.store');
+    Route::patch('office-attendances/{officeAttendance}', [OfficeAttendanceController::class, 'update'])
+        ->can('update', 'officeAttendance')
+        ->name('office-attendances.update');
+
+    Route::post('field-activities', [FieldActivityController::class, 'store'])->name('field-activities.store');
+    Route::patch('field-activities/{fieldActivity}', [FieldActivityController::class, 'update'])
+        ->can('update', 'fieldActivity')
+        ->name('field-activities.update');
 });
 
 require __DIR__.'/settings.php';

@@ -69,7 +69,7 @@
 
 @theme inline {
     --font-sans:
-        Instrument Sans, ui-sans-serif, system-ui, sans-serif,
+        'Source Sans 3', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
 
@@ -143,83 +143,89 @@
     body,
     html {
         --font-sans:
-            'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+            'Source Sans 3', ui-sans-serif, system-ui, sans-serif,
             'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
             'Noto Color Emoji';
     }
 }
 
 :root {
-    --background: hsl(0 0% 100%);
-    --foreground: hsl(0 0% 3.9%);
-    --card: hsl(0 0% 100%);
-    --card-foreground: hsl(0 0% 3.9%);
-    --popover: hsl(0 0% 100%);
-    --popover-foreground: hsl(0 0% 3.9%);
-    --primary: hsl(0 0% 9%);
-    --primary-foreground: hsl(0 0% 98%);
-    --secondary: hsl(0 0% 92.1%);
-    --secondary-foreground: hsl(0 0% 9%);
-    --muted: hsl(0 0% 96.1%);
-    --muted-foreground: hsl(0 0% 45.1%);
-    --accent: hsl(0 0% 96.1%);
-    --accent-foreground: hsl(0 0% 9%);
-    --destructive: hsl(0 84.2% 60.2%);
-    --destructive-foreground: hsl(0 0% 98%);
-    --border: hsl(0 0% 92.8%);
-    --input: hsl(0 0% 89.8%);
-    --ring: hsl(0 0% 3.9%);
-    --chart-1: hsl(12 76% 61%);
-    --chart-2: hsl(173 58% 39%);
-    --chart-3: hsl(197 37% 24%);
-    --chart-4: hsl(43 74% 66%);
-    --chart-5: hsl(27 87% 67%);
-    --radius: 0.5rem;
-    --sidebar-background: hsl(0 0% 98%);
-    --sidebar-foreground: hsl(240 5.3% 26.1%);
-    --sidebar-primary: hsl(0 0% 10%);
-    --sidebar-primary-foreground: hsl(0 0% 98%);
-    --sidebar-accent: hsl(0 0% 94%);
-    --sidebar-accent-foreground: hsl(0 0% 30%);
-    --sidebar-border: hsl(0 0% 91%);
-    --sidebar-ring: hsl(217.2 91.2% 59.8%);
-    --sidebar: hsl(0 0% 98%);
+    /*
+      Staff portal and auth pages use the website palette through the
+      component tokens: forest green for primary actions, cream for quiet
+      surfaces, stone for lines, and a deep-green sidebar like the site's
+      utility bar and footer.
+    */
+    --background: #fbf9f4;
+    --foreground: #1c2420;
+    --card: #ffffff;
+    --card-foreground: #1c2420;
+    --popover: #ffffff;
+    --popover-foreground: #1c2420;
+    --primary: #1a5139;
+    --primary-foreground: #ffffff;
+    --secondary: #f6f0e3;
+    --secondary-foreground: #15422f;
+    --muted: #f3eee2;
+    --muted-foreground: #57534e;
+    --accent: #eef5f0;
+    --accent-foreground: #15422f;
+    --destructive: #b42318;
+    --destructive-foreground: #ffffff;
+    --border: #e7e5e4;
+    --input: #d6d3d1;
+    --ring: #216245;
+    --chart-1: #1a5139;
+    --chart-2: #f7b52c;
+    --chart-3: #2b6a86;
+    --chart-4: #b4532f;
+    --chart-5: #66782b;
+    --radius: 0.25rem;
+    --sidebar-background: #0a2419;
+    --sidebar-foreground: #d5e8dc;
+    --sidebar-primary: #f7b52c;
+    --sidebar-primary-foreground: #0a2419;
+    --sidebar-accent: #15422f;
+    --sidebar-accent-foreground: #ffffff;
+    --sidebar-border: #15422f;
+    --sidebar-ring: #f7b52c;
+    --sidebar: #0a2419;
 }
 
 .dark {
-    --background: hsl(0 0% 3.9%);
-    --foreground: hsl(0 0% 98%);
-    --card: hsl(0 0% 3.9%);
-    --card-foreground: hsl(0 0% 98%);
-    --popover: hsl(0 0% 3.9%);
-    --popover-foreground: hsl(0 0% 98%);
-    --primary: hsl(0 0% 98%);
-    --primary-foreground: hsl(0 0% 9%);
-    --secondary: hsl(0 0% 14.9%);
-    --secondary-foreground: hsl(0 0% 98%);
-    --muted: hsl(0 0% 16.08%);
-    --muted-foreground: hsl(0 0% 63.9%);
-    --accent: hsl(0 0% 14.9%);
-    --accent-foreground: hsl(0 0% 98%);
-    --destructive: hsl(0 84% 60%);
-    --destructive-foreground: hsl(0 0% 98%);
-    --border: hsl(0 0% 14.9%);
-    --input: hsl(0 0% 14.9%);
-    --ring: hsl(0 0% 83.1%);
-    --chart-1: hsl(220 70% 50%);
-    --chart-2: hsl(160 60% 45%);
-    --chart-3: hsl(30 80% 55%);
-    --chart-4: hsl(280 65% 60%);
-    --chart-5: hsl(340 75% 55%);
-    --sidebar-background: hsl(0 0% 7%);
-    --sidebar-foreground: hsl(0 0% 95.9%);
-    --sidebar-primary: hsl(360, 100%, 100%);
-    --sidebar-primary-foreground: hsl(0 0% 100%);
-    --sidebar-accent: hsl(0 0% 15.9%);
-    --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-    --sidebar-border: hsl(0 0% 15.9%);
-    --sidebar-ring: hsl(217.2 91.2% 59.8%);
-    --sidebar: hsl(240 5.9% 10%);
+    --background: #08170f;
+    --foreground: #f6f0e3;
+    --card: #0d2219;
+    --card-foreground: #f6f0e3;
+    --popover: #0d2219;
+    --popover-foreground: #f6f0e3;
+    --primary: #7bb393;
+    --primary-foreground: #0a2419;
+    --secondary: #15422f;
+    --secondary-foreground: #f6f0e3;
+    --muted: #123024;
+    --muted-foreground: #abd1b9;
+    --accent: #15422f;
+    --accent-foreground: #f6f0e3;
+    --destructive: #f97066;
+    --destructive-foreground: #0a2419;
+    --border: #1d4433;
+    --input: #2a5a44;
+    --ring: #7bb393;
+    --chart-1: #7bb393;
+    --chart-2: #f7b52c;
+    --chart-3: #6aa7c2;
+    --chart-4: #e08a66;
+    --chart-5: #b4c46a;
+    --sidebar-background: #051209;
+    --sidebar-foreground: #d5e8dc;
+    --sidebar-primary: #f7b52c;
+    --sidebar-primary-foreground: #0a2419;
+    --sidebar-accent: #103526;
+    --sidebar-accent-foreground: #ffffff;
+    --sidebar-border: #103526;
+    --sidebar-ring: #f7b52c;
+    --sidebar: #051209;
 }
 
 @layer base {
@@ -268,5 +274,21 @@
         background-size: 100% 0.36em;
         box-decoration-break: clone;
         -webkit-box-decoration-break: clone;
+    }
+
+    /*
+      Staff portal building blocks. They follow the site ones but use the
+      component tokens so the portal also works in dark mode.
+    */
+    .portal-container {
+        @apply mx-auto w-full max-w-5xl px-5 sm:px-6 lg:px-8;
+    }
+
+    .portal-input {
+        @apply block w-full rounded-[3px] border border-input bg-card px-3.5 py-3 font-body text-[1rem] text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none aria-invalid:border-destructive;
+    }
+
+    .portal-label-text {
+        @apply mb-1.5 block font-body text-[0.95rem] font-semibold text-foreground;
     }
 }

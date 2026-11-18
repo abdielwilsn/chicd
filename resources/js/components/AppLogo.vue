@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { usePage } from '@inertiajs/vue3';
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
-
-const name = usePage().props.name;
+import SiteLogoMark from '@/components/site/SiteLogoMark.vue';
 </script>
 
 <template>
-    <div
-        class="flex aspect-square size-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground"
-    >
-        <AppLogoIcon class="size-5 fill-current text-white dark:text-black" />
-    </div>
-    <div class="ml-1 grid flex-1 text-left text-sm">
-        <span class="mb-0.5 truncate leading-tight font-semibold">{{
-            name
-        }}</span>
-    </div>
+    <span class="flex size-8 shrink-0 items-center justify-center">
+        <SiteLogoMark inverted class="size-8" />
+    </span>
+    <span class="ml-1 flex min-w-0 flex-col leading-none">
+        <span
+            class="font-display text-[1.45rem] leading-[0.85] font-extrabold tracking-[0.02em] text-white"
+            >CHICD</span
+        >
+        <span
+            class="mt-1 font-display text-[0.72rem] font-bold tracking-[0.14em] text-sun-300 uppercase"
+            >Staff portal</span
+        >
+    </span>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import Heading from '@/components/Heading.vue';
+import PortalPageHeader from '@/components/staff/PortalPageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
@@ -29,25 +29,25 @@ const { isCurrentOrParentUrl } = useCurrentUrl();
 </script>
 
 <template>
-    <div class="px-4 py-6">
-        <Heading
-            title="Settings"
-            description="Manage your profile and account settings"
-        />
+    <div>
+        <PortalPageHeader eyebrow="Your account" title="Settings">
+            <p>Manage your profile, password and sign-in security.</p>
+        </PortalPageHeader>
 
-        <div class="flex flex-col lg:flex-row lg:space-x-12">
-            <aside class="w-full max-w-xl lg:w-48">
-                <nav
-                    class="flex flex-col space-y-1 space-x-0"
-                    aria-label="Settings"
-                >
+        <div
+            class="portal-container flex flex-col py-8 sm:py-10 lg:flex-row lg:gap-12"
+        >
+            <aside class="w-full max-w-xl lg:w-52">
+                <nav class="flex flex-col gap-1" aria-label="Settings">
                     <Button
                         v-for="item in sidebarNavItems"
                         :key="toUrl(item.href)"
                         variant="ghost"
                         :class="[
-                            'w-full justify-start',
-                            { 'bg-muted': isCurrentOrParentUrl(item.href) },
+                            'h-10 w-full justify-start rounded-[3px] text-[0.98rem] font-semibold',
+                            isCurrentOrParentUrl(item.href)
+                                ? 'bg-secondary text-secondary-foreground shadow-[inset_4px_0_0_var(--color-sun-400)]'
+                                : 'text-muted-foreground',
                         ]"
                         as-child
                     >
