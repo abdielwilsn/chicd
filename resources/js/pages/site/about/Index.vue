@@ -82,7 +82,7 @@ const approach = [
         title: 'Partnerships',
         paragraphs: [
             'We recognise that no single organisation has all the expertise, resources or reach needed to address complex community challenges.',
-            'CHICD values collaboration with communities, government institutions, universities, research organisations, healthcare providers, civil society, businesses, foundations and development partners.',
+            'CHICD values collaboration with communities, government institutions, academic institutions, research organisations, healthcare providers, civil society, businesses, foundations and development partners.',
             'We seek partnerships built around shared objectives, complementary expertise and a commitment to meaningful outcomes.',
         ],
     },
@@ -294,9 +294,9 @@ const institutionsWeEngage = [
                 <SiteButton :href="work.index.url()" variant="ghostLight">
                     Explore Our Work
                 </SiteButton>
-                <SiteButton :href="donate.url()" variant="donate">
+                <!-- <SiteButton :href="donate.url()" variant="donate">
                     Support CHICD
-                </SiteButton>
+                </SiteButton> -->
             </template>
         </CallToAction>
     </div>

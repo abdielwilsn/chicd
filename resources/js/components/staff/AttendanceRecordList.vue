@@ -1,12 +1,38 @@
 <script setup lang="ts">
-import { Building2, Route, TriangleAlert } from '@lucide/vue';
+import {
+    Building2,
+    MessageSquareWarning,
+    Route,
+    TriangleAlert,
+} from '@lucide/vue';
 import { formatMinutes } from '@/lib/duration';
-import type { FieldActivity, OfficeAttendance } from '@/types';
+import type {
+    CorrectableRecord,
+    FieldActivity,
+    OfficeAttendance,
+} from '@/types';
 
-defineProps<{
-    officeAttendances: OfficeAttendance[];
-    fieldActivities: FieldActivity[];
+withDefaults(
+    defineProps<{
+        officeAttendances: OfficeAttendance[];
+        fieldActivities: FieldActivity[];
+        /** Show a "Request a correction" link on each record. */
+        correctable?: boolean;
+    }>(),
+    { correctable: false },
+);
+
+const emit = defineEmits<{
+    requestCorrection: [record: CorrectableRecord];
 }>();
+
+function officeSummary(attendance: OfficeAttendance): string {
+    return `Office session on ${attendance.date}, ${attendance.clocked_in_time} to ${attendance.clocked_out_time ?? 'no clock-out'}`;
+}
+
+function fieldSummary(activity: FieldActivity): string {
+    return `${activity.activity} on ${activity.date}, ${activity.started_time} to ${activity.ended_time ?? 'not ended'}`;
+}
 
 /**
  * Describes which ends of an office session fell outside the geofence.
@@ -65,6 +91,21 @@ function geofenceFlag(attendance: OfficeAttendance): string | null {
                     <TriangleAlert class="size-4 shrink-0" />
                     {{ geofenceFlag(attendance) }}
                 </p>
+                <button
+                    v-if="correctable"
+                    type="button"
+                    class="mt-2 inline-flex items-center gap-1.5 text-[0.9rem] font-semibold text-brand-700 underline-offset-4 hover:underline dark:text-brand-200"
+                    @click="
+                        emit('requestCorrection', {
+                            type: 'office_attendance',
+                            id: attendance.id,
+                            summary: officeSummary(attendance),
+                        })
+                    "
+                >
+                    <MessageSquareWarning class="size-4" />
+                    Request a correction
+                </button>
             </div>
             <p
                 class="font-display text-lg font-bold text-foreground tabular-nums"
@@ -106,6 +147,21 @@ function geofenceFlag(attendance: OfficeAttendance): string | null {
                         · In progress
                     </template>
                 </p>
+                <button
+                    v-if="correctable"
+                    type="button"
+                    class="mt-2 inline-flex items-center gap-1.5 text-[0.9rem] font-semibold text-brand-700 underline-offset-4 hover:underline dark:text-brand-200"
+                    @click="
+                        emit('requestCorrection', {
+                            type: 'field_activity',
+                            id: activity.id,
+                            summary: fieldSummary(activity),
+                        })
+                    "
+                >
+                    <MessageSquareWarning class="size-4" />
+                    Request a correction
+                </button>
             </div>
             <p
                 class="font-display text-lg font-bold text-foreground tabular-nums"

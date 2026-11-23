@@ -37,6 +37,15 @@ const ways = [
         accent: 'border-terracotta-600',
     },
     {
+        title: 'Opportunities',
+        description:
+            'Volunteer roles, research opportunities, internships, vacancies and consultancies currently open at CHICD.',
+        href: getInvolved.opportunities.url(),
+        cta: 'View Opportunities',
+        image: siteImages.education,
+        accent: 'border-brand-600',
+    },
+    {
         title: 'Research & Academic Collaboration',
         description:
             'Work with CHICD on community-based research, behavioural science, health innovation and evidence-informed interventions.',
@@ -101,9 +110,9 @@ const ways = [
                 <SectionIntro title="Ways to Get Involved" />
                 <ul class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-6">
                     <li
-                        v-for="(way, index) in ways"
+                        v-for="way in ways"
                         :key="way.title"
-                        :class="index < 3 ? 'lg:col-span-2' : 'lg:col-span-3'"
+                        class="lg:col-span-2"
                     >
                         <LinkCard
                             :href="way.href"

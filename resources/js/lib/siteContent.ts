@@ -197,6 +197,12 @@ export const mainNavigation: SiteNavGroup[] = [
                 href: resources.news.url(),
                 description: 'Updates and perspectives from our work.',
             },
+            {
+                title: 'Media Gallery',
+                image: siteImages.volunteer,
+                href: resources.gallery.url(),
+                description: 'Photographs and videos from our work.',
+            },
         ],
     },
     {
@@ -214,6 +220,12 @@ export const mainNavigation: SiteNavGroup[] = [
                 image: siteImages.volunteer,
                 href: getInvolved.volunteer.url(),
                 description: 'Contribute your skills, knowledge and time.',
+            },
+            {
+                title: 'Opportunities',
+                image: siteImages.education,
+                href: getInvolved.opportunities.url(),
+                description: 'Volunteer roles, vacancies and consultancies.',
             },
             {
                 title: 'Support Our Programmes',
@@ -297,13 +309,13 @@ export const thematicAreas: ThematicArea[] = [
         title: 'Research, Evidence and Behavioural Change',
         summary:
             'Using research, data and behavioural science to understand community challenges, inform interventions and support mental well-being and positive behavioural change.',
-        heading: 'Generating Knowledge That Informs Action',
+        heading: 'Knowledge That Informs Action',
         paragraphs: [
             'Understanding a problem is an important part of developing an effective response. Research helps identify community needs, examine the factors contributing to health and development challenges, and assess whether interventions are achieving their intended objectives.',
             'CHICD promotes the use of research, data and behavioural science to inform programme development and improve decision-making.',
             'Our interests include public health research, psychological and behavioural studies, community needs assessments, programme evaluation, mental well-being and the application of behavioural insights to health and development.',
             'We are particularly interested in research that contributes to practical solutions. This includes understanding why people experience difficulties accessing services, the factors influencing behaviour and how programmes can be designed to respond more effectively.',
-            'We seek to collaborate with researchers, universities, practitioners and development organisations to generate and share knowledge that supports better policies, services and community interventions.',
+            'We seek to collaborate with researchers, academic institutions, practitioners and development organisations to generate and share knowledge that supports better policies, services and community interventions.',
         ],
         icon: Microscope,
         image: siteImages.research,
@@ -467,17 +479,6 @@ export const surlProjects: SurlProject[] = [
         icon: GraduationCap,
     },
 ];
-
-/**
- * Funds a donor can choose to support, used by the Donate page.
- */
-export const donationFunds = [
-    { value: 'general', label: 'Donate to CHICD (most needed)' },
-    { value: 'surl', label: 'Show Up Ready to Learn (SURL)' },
-    { value: 'safe-housing', label: 'Safe Housing Programme' },
-] as const;
-
-export type DonationFund = (typeof donationFunds)[number]['value'];
 
 /** Link to the newsletter sign-up section. */
 export const newsletterAnchor = `${resources.news.url()}#newsletter`;

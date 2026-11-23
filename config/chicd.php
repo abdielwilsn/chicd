@@ -42,6 +42,33 @@ return [
 
     'enquiries_email' => env('CHICD_ENQUIRIES_EMAIL', env('CHICD_CONTACT_EMAIL', 'info@chicd.org')),
 
+    'donations_email' => env('CHICD_DONATIONS_EMAIL', env('CHICD_ENQUIRIES_EMAIL', env('CHICD_CONTACT_EMAIL', 'info@chicd.org'))),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Donations
+    |--------------------------------------------------------------------------
+    |
+    | Donations are taken through Paystack (see config/services.php). A donor
+    | gives to CHICD generally or to one of these funds; published programmes
+    | added by an admin are offered after them, keyed by their page slug.
+    |
+    | Amounts are whole naira.
+    |
+    */
+
+    'donation_funds' => [
+        'general' => 'Donate to CHICD (where it is needed most)',
+        'surl' => 'Show Up Ready to Learn (SURL)',
+        'safe-housing' => 'Safe Housing Programme',
+    ],
+
+    'donation_amounts' => [
+        'suggested' => [5000, 10000, 25000, 50000],
+        'minimum' => 100,
+        'maximum' => 50000000,
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Staff Portal
@@ -56,6 +83,19 @@ return [
     */
 
     'timezone' => env('CHICD_TIMEZONE', 'Africa/Lagos'),
+
+    /*
+    | Working days (ISO day numbers, 1 = Monday) and the start of the working
+    | day. A working day with no office or field record, no approved leave and
+    | no public holiday counts as an absence. Starting work after the start
+    | time plus the grace period counts as late.
+    */
+
+    'working_hours' => [
+        'days' => [1, 2, 3, 4, 5],
+        'start' => env('CHICD_WORKDAY_START', '08:00'),
+        'grace_minutes' => (int) env('CHICD_LATENESS_GRACE_MINUTES', 15),
+    ],
 
     'field_programmes' => [
         'Show Up Ready to Learn (SURL)',

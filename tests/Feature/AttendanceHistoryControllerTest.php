@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\CorrectionRequest;
 use App\Models\FieldActivity;
 use App\Models\OfficeAttendance;
 use App\Models\User;
@@ -110,5 +111,27 @@ test('open sessions are listed but not counted towards the totals', function () 
         ->where('days.0.officeAttendances.0.minutes', null)
         ->where('totals.officeMinutes', 0)
         ->where('totals.officeDays', 1)
+    );
+});
+
+test('a correction request about the last day of the month is listed with that month', function () {
+    $this->travelTo('2026-12-05 10:00:00');
+    $user = User::factory()->create();
+    $request = CorrectionRequest::factory()->for($user)->create(['work_date' => '2026-11-30']);
+
+    $this->actingAs($user)->get(route('attendance.index', ['month' => '2026-11']))
+        ->assertInertia(fn (Assert $page) => $page->where('correctionRequests.0.id', $request->id));
+});
+
+test('staff see their lateness, absence and leave for the month', function () {
+    config(['chicd.working_hours' => ['days' => [1, 2, 3, 4, 5], 'start' => '08:00', 'grace_minutes' => 15]]);
+    $this->travelTo('2026-11-04 10:00:00');
+    $user = User::factory()->create(['created_at' => '2026-10-01 09:00:00']);
+    OfficeAttendance::factory()->for($user)->clockedOut()->create(['clocked_in_at' => '2026-11-02 08:30:00', 'clocked_out_at' => '2026-11-02 15:00:00']);
+
+    $this->actingAs($user)->get(route('attendance.index', ['month' => '2026-11']))->assertInertia(fn (Assert $page) => $page
+        ->where('attendance.lateDays.0.date', '2026-11-02')
+        ->where('attendance.absentDays.0.date', '2026-11-03')
+        ->where('lateAfter', "08:00 (with 15 minutes' grace)")
     );
 });

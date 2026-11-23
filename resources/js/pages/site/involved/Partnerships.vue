@@ -89,8 +89,8 @@ const subjectOptions = [
                     >
                         <p>
                             CHICD welcomes collaboration with government
-                            agencies, healthcare institutions, universities,
-                            research organisations, civil society groups,
+                            agencies, healthcare institutions, academic institutions,
+                            research organisations, individuals, civil society groups,
                             businesses, foundations and development partners.
                         </p>
                         <p>

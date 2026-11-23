@@ -23,10 +23,11 @@ import work from '@/routes/work';
 const donateToSafeHousing = donate.url({ query: { fund: 'safe-housing' } });
 
 const whoWeSupport = [
-    'LGBTQ+ adults experiencing rejection, discrimination, threats or displacement.',
+
     'Survivors of domestic violence, abuse or exploitation who require temporary shelter.',
     'Adults experiencing homelessness, displacement or serious housing insecurity.',
     'People living with HIV or other stigmatised health conditions who experience housing-related exclusion.',
+    'LGBTQ+ adults experiencing rejection, discrimination, threats or displacement.',
     'Persons with disabilities facing housing insecurity, where their needs can be safely accommodated.',
     'Other marginalised adults experiencing circumstances that make access to safe accommodation difficult.',
 ];

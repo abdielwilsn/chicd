@@ -1,29 +1,128 @@
 <script setup lang="ts">
-import { Head, usePage } from '@inertiajs/vue3';
-import { CreditCard, GraduationCap, House, Sparkles } from '@lucide/vue';
-import { computed } from 'vue';
-import EnquiryForm from '@/components/site/EnquiryForm.vue';
+import { Head, router, useForm } from '@inertiajs/vue3';
+import {
+    CreditCard,
+    GraduationCap,
+    House,
+    LockKeyhole,
+    Repeat,
+    Sparkles,
+} from '@lucide/vue';
+import { computed, onMounted, ref } from 'vue';
+import InputError from '@/components/InputError.vue';
 import PageHeader from '@/components/site/PageHeader.vue';
 import SectionIntro from '@/components/site/SectionIntro.vue';
-import type { DonationFund } from '@/lib/siteContent';
-import { donationFunds, siteImages } from '@/lib/siteContent';
+import SiteButton from '@/components/site/SiteButton.vue';
+import { siteImages } from '@/lib/siteContent';
 import { donate } from '@/routes';
+import { callback, store } from '@/routes/donations';
+import { loadPaystack, openPaystackCheckout } from '@/lib/paystack';
+import type { PaystackPayment } from '@/lib/paystack';
+import type { DonationFrequencyValue, Option } from '@/types';
 
-const page = usePage();
+const props = defineProps<{
+    funds: Option[];
+    frequencies: Option[];
+    selectedFund: string;
+    amounts: { suggested: number[]; minimum: number; maximum: number };
+}>();
 
-const selectedFund = computed<DonationFund>(() => {
-    const fund = new URLSearchParams(page.url.split('?')[1] ?? '').get('fund');
-
-    return donationFunds.some((option) => option.value === fund)
-        ? (fund as DonationFund)
-        : 'general';
+const form = useForm({
+    fund: props.selectedFund,
+    frequency: 'one_time' as DonationFrequencyValue,
+    amount: (props.amounts.suggested[1] ?? props.amounts.suggested[0] ?? '') as
+        | number
+        | '',
+    name: '',
+    email: '',
+    phone: '',
+    website: '',
 });
 
-const selectedFundLabel = computed(
+const naira = new Intl.NumberFormat('en-NG', {
+    style: 'currency',
+    currency: 'NGN',
+    maximumFractionDigits: 0,
+});
+
+const formatNaira = (amount: number): string => naira.format(amount);
+
+/** Errors that do not belong to a field, such as Paystack being unreachable. */
+const formError = computed(
     () =>
-        donationFunds.find((option) => option.value === selectedFund.value)
-            ?.label ?? donationFunds[0].label,
+        (form.errors as Partial<Record<string, string>>).payment ??
+        form.errors.website,
 );
+
+const isRecurring = computed(() => form.frequency !== 'one_time');
+
+/** Whether the Paystack popup is open for this gift. */
+const paying = ref(false);
+
+/** Whether the donor closed the popup without paying. */
+const cancelled = ref(false);
+
+// Fetch Paystack's script while the donor fills in the form, so the popup
+// opens straight away. If it cannot load, the donor is sent to Paystack's
+// checkout page when they give.
+onMounted(() => {
+    loadPaystack().catch(() => undefined);
+});
+
+const submitLabel = computed(() => {
+    if (paying.value) {
+        return 'Complete your gift in the Paystack window';
+    }
+
+    if (form.processing) {
+        return 'Connecting to Paystack…';
+    }
+
+    if (typeof form.amount !== 'number' || form.amount <= 0) {
+        return 'Continue to secure payment';
+    }
+
+    const suffix =
+        form.frequency === 'monthly'
+            ? ' a month'
+            : form.frequency === 'annually'
+              ? ' a year'
+              : '';
+
+    return `Give ${formatNaira(form.amount)}${suffix}`;
+});
+
+const pay = (payment: PaystackPayment): void => {
+    paying.value = true;
+
+    void openPaystackCheckout(payment, {
+        onSuccess: () => {
+            router.visit(
+                callback.url({ query: { reference: payment.reference } }),
+            );
+        },
+        onCancel: () => {
+            paying.value = false;
+            cancelled.value = true;
+        },
+    });
+};
+
+const submit = (): void => {
+    cancelled.value = false;
+
+    form.post(store.url(), {
+        preserveScroll: true,
+        preserveState: true,
+        onFlash: (flash) => {
+            const payment = flash.paystack as PaystackPayment | undefined;
+
+            if (payment) {
+                pay(payment);
+            }
+        },
+    });
+};
 
 const impactAreas = [
     {
@@ -130,50 +229,243 @@ const impactAreas = [
                         gift.
                     </p>
 
-                    <div
-                        class="mt-6 flex gap-4 border-l-4 border-brand-600 bg-brand-50 p-5"
-                    >
-                        <CreditCard
-                            class="mt-0.5 size-6 shrink-0 text-brand-700"
-                        />
-                        <div>
-                            <h3 class="font-bold text-ink">
-                                Secure online giving is coming soon
-                            </h3>
-                            <p class="mt-1 leading-relaxed text-stone-700">
-                                We are setting up secure online card and bank
-                                payments. Until then, send us your details and
-                                we will contact you with the safest way to
-                                complete your gift and a receipt.
-                            </p>
+                    <form class="mt-6 space-y-6" @submit.prevent="submit">
+                        <div
+                            class="absolute -left-[10000px] h-px w-px overflow-hidden"
+                            aria-hidden="true"
+                        >
+                            <label for="donation-website"
+                                >Leave this field empty</label
+                            >
+                            <input
+                                id="donation-website"
+                                v-model="form.website"
+                                type="text"
+                                tabindex="-1"
+                                autocomplete="off"
+                            />
                         </div>
-                    </div>
 
-                    <p class="mt-6 border-y border-stone-200 py-4">
-                        <span
-                            class="block font-display text-[0.95rem] font-bold tracking-[0.12em] text-sun-700 uppercase"
-                            >You are giving to</span
-                        >
-                        <span
-                            class="mt-1 block font-heading text-xl font-bold text-ink"
-                            >{{ selectedFundLabel }}</span
-                        >
-                    </p>
+                        <div>
+                            <label for="donation-fund" class="site-label-text"
+                                >I would like to support</label
+                            >
+                            <select
+                                id="donation-fund"
+                                v-model="form.fund"
+                                class="site-input"
+                                :aria-invalid="!!form.errors.fund"
+                            >
+                                <option
+                                    v-for="fund in funds"
+                                    :key="fund.value"
+                                    :value="fund.value"
+                                >
+                                    {{ fund.label }}
+                                </option>
+                            </select>
+                            <InputError
+                                :message="form.errors.fund"
+                                class="mt-1.5"
+                            />
+                        </div>
 
-                    <EnquiryForm
-                        :key="selectedFund"
-                        type="donation"
-                        show-organisation
-                        subject-label="I would like to support"
-                        :subject-options="
-                            donationFunds.map((option) => option.label)
-                        "
-                        :default-subject="selectedFundLabel"
-                        message-label="Your gift"
-                        message-placeholder="For example: a one-time gift of ₦50,000, or a monthly gift of ₦10,000."
-                        submit-label="Send my pledge"
-                        class="mt-6"
-                    />
+                        <fieldset>
+                            <legend class="site-label-text">How often</legend>
+                            <div class="grid grid-cols-3 gap-2">
+                                <label
+                                    v-for="frequency in frequencies"
+                                    :key="frequency.value"
+                                    class="flex min-h-12 cursor-pointer items-center justify-center rounded-[3px] border-2 px-3 py-2 text-center font-semibold transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-600/40"
+                                    :class="
+                                        form.frequency === frequency.value
+                                            ? 'border-brand-700 bg-brand-700 text-white'
+                                            : 'border-stone-300 text-ink hover:border-brand-600'
+                                    "
+                                >
+                                    <input
+                                        v-model="form.frequency"
+                                        type="radio"
+                                        name="frequency"
+                                        :value="frequency.value"
+                                        class="sr-only"
+                                    />
+                                    {{ frequency.label }}
+                                </label>
+                            </div>
+                            <p
+                                v-if="isRecurring"
+                                class="mt-2 flex gap-2 text-[0.95rem] text-stone-600"
+                            >
+                                <Repeat
+                                    class="mt-0.5 size-4 shrink-0 text-brand-700"
+                                />
+                                Paystack will charge your card on the same
+                                schedule until you ask us to stop. You will get
+                                a receipt each time.
+                            </p>
+                            <InputError
+                                :message="form.errors.frequency"
+                                class="mt-1.5"
+                            />
+                        </fieldset>
+
+                        <fieldset>
+                            <legend class="site-label-text">Amount</legend>
+                            <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                                <button
+                                    v-for="amount in amounts.suggested"
+                                    :key="amount"
+                                    type="button"
+                                    class="min-h-12 rounded-[3px] border-2 px-3 py-2 font-semibold tabular-nums transition-colors focus-visible:ring-2 focus-visible:ring-brand-600/40 focus-visible:outline-none"
+                                    :class="
+                                        form.amount === amount
+                                            ? 'border-brand-700 bg-brand-700 text-white'
+                                            : 'border-stone-300 text-ink hover:border-brand-600'
+                                    "
+                                    :aria-pressed="form.amount === amount"
+                                    @click="form.amount = amount"
+                                >
+                                    {{ formatNaira(amount) }}
+                                </button>
+                            </div>
+                            <label
+                                for="donation-amount"
+                                class="mt-3 block text-[0.95rem] text-stone-600"
+                                >Or enter another amount in naira</label
+                            >
+                            <div class="relative mt-1.5">
+                                <span
+                                    class="pointer-events-none absolute inset-y-0 left-3.5 flex items-center font-semibold text-stone-500"
+                                    aria-hidden="true"
+                                    >₦</span
+                                >
+                                <input
+                                    id="donation-amount"
+                                    v-model.number="form.amount"
+                                    type="number"
+                                    inputmode="numeric"
+                                    :min="amounts.minimum"
+                                    :max="amounts.maximum"
+                                    step="1"
+                                    required
+                                    class="site-input pl-8 tabular-nums"
+                                    :aria-invalid="!!form.errors.amount"
+                                />
+                            </div>
+                            <InputError
+                                :message="form.errors.amount"
+                                class="mt-1.5"
+                            />
+                        </fieldset>
+
+                        <div class="grid gap-5 sm:grid-cols-2">
+                            <div class="sm:col-span-2">
+                                <label
+                                    for="donation-name"
+                                    class="site-label-text"
+                                    >Full name</label
+                                >
+                                <input
+                                    id="donation-name"
+                                    v-model="form.name"
+                                    type="text"
+                                    required
+                                    autocomplete="name"
+                                    class="site-input"
+                                    :aria-invalid="!!form.errors.name"
+                                />
+                                <InputError
+                                    :message="form.errors.name"
+                                    class="mt-1.5"
+                                />
+                            </div>
+                            <div>
+                                <label
+                                    for="donation-email"
+                                    class="site-label-text"
+                                    >Email address</label
+                                >
+                                <input
+                                    id="donation-email"
+                                    v-model="form.email"
+                                    type="email"
+                                    required
+                                    autocomplete="email"
+                                    class="site-input"
+                                    :aria-invalid="!!form.errors.email"
+                                />
+                                <p class="mt-1.5 text-sm text-stone-500">
+                                    We send your receipt here.
+                                </p>
+                                <InputError
+                                    :message="form.errors.email"
+                                    class="mt-1.5"
+                                />
+                            </div>
+                            <div>
+                                <label
+                                    for="donation-phone"
+                                    class="site-label-text"
+                                >
+                                    Phone number
+                                    <span class="font-normal text-stone-500"
+                                        >(optional)</span
+                                    >
+                                </label>
+                                <input
+                                    id="donation-phone"
+                                    v-model="form.phone"
+                                    type="tel"
+                                    autocomplete="tel"
+                                    class="site-input"
+                                    :aria-invalid="!!form.errors.phone"
+                                />
+                                <InputError
+                                    :message="form.errors.phone"
+                                    class="mt-1.5"
+                                />
+                            </div>
+                        </div>
+
+                        <div
+                            v-if="cancelled && !formError"
+                            class="border-l-4 border-sun-400 bg-cream p-4 text-[0.98rem] text-ink"
+                            role="status"
+                        >
+                            Your payment was cancelled and you have not been
+                            charged. You can try again whenever you are ready.
+                        </div>
+
+                        <div
+                            v-if="formError"
+                            class="border-l-4 border-terracotta-600 bg-cream p-4 text-[0.98rem] text-ink"
+                            role="alert"
+                        >
+                            {{ formError }}
+                        </div>
+
+                        <SiteButton
+                            type="submit"
+                            variant="donate"
+                            size="lg"
+                            class="w-full"
+                            :disabled="form.processing || paying"
+                        >
+                            <LockKeyhole />
+                            {{ submitLabel }}
+                        </SiteButton>
+
+                        <p
+                            class="flex gap-3 text-[0.95rem] leading-relaxed text-stone-600"
+                        >
+                            <CreditCard
+                                class="mt-0.5 size-5 shrink-0 text-brand-700"
+                            />
+                            A secure Paystack window opens to take your payment.
+                            CHICD never sees or stores your card details.
+                        </p>
+                    </form>
                 </div>
             </div>
         </section>

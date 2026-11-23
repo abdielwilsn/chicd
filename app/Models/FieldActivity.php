@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\HasRecordChanges;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use Database\Factories\FieldActivityFactory;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
  * A field activity recorded in Field/Activity mode.
@@ -51,7 +53,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class FieldActivity extends Model
 {
     /** @use HasFactory<FieldActivityFactory> */
-    use HasFactory;
+    use HasFactory, HasRecordChanges;
 
     /**
      * Whether the activity has not been ended yet.
@@ -95,6 +97,16 @@ class FieldActivity extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Staff requests to correct this record.
+     *
+     * @return MorphMany<CorrectionRequest, $this>
+     */
+    public function correctionRequests(): MorphMany
+    {
+        return $this->morphMany(CorrectionRequest::class, 'correctable');
     }
 
     /**

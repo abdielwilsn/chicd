@@ -5,11 +5,18 @@ import CallToAction from '@/components/site/CallToAction.vue';
 import EmptyState from '@/components/site/EmptyState.vue';
 import PageHeader from '@/components/site/PageHeader.vue';
 import PlusList from '@/components/site/PlusList.vue';
+import PublicationLibrary from '@/components/site/PublicationLibrary.vue';
 import SectionIntro from '@/components/site/SectionIntro.vue';
 import SiteButton from '@/components/site/SiteButton.vue';
 import { siteImages } from '@/lib/siteContent';
 import getInvolved from '@/routes/get-involved';
 import resources from '@/routes/resources';
+import type { Publication } from '@/types';
+
+defineProps<{
+    /** The latest research outputs, briefs, evaluations and toolkits. */
+    publications: Publication[];
+}>();
 
 const interests = [
     'Public health',
@@ -114,7 +121,28 @@ const methods = [
                         and toolkits will be shared here as they are completed.
                     </p>
                 </SectionIntro>
+                <template v-if="publications.length">
+                    <PublicationLibrary
+                        :featured-annual-report="null"
+                        :groups="[
+                            {
+                                category: 'latest',
+                                label: 'Latest outputs',
+                                items: publications,
+                            },
+                        ]"
+                        class="mt-10"
+                    />
+                    <SiteButton
+                        :href="resources.publications.url()"
+                        variant="outline"
+                        class="mt-10"
+                    >
+                        Browse All Publications
+                    </SiteButton>
+                </template>
                 <EmptyState
+                    v-else
                     :icon="BookOpenText"
                     title="Our first research outputs are in development"
                     class="mt-10"
