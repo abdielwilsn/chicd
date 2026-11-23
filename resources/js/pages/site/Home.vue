@@ -8,20 +8,37 @@ import SiteButton from '@/components/site/SiteButton.vue';
 import SitePhoto from '@/components/site/SitePhoto.vue';
 import SocialLinks from '@/components/site/SocialLinks.vue';
 import ThematicAreaCard from '@/components/site/ThematicAreaCard.vue';
+import ThematicHeroCarousel from '@/components/site/ThematicHeroCarousel.vue';
 import FeatureSplit from '@/components/site/FeatureSplit.vue';
-import { programmes, siteImages, thematicAreas } from '@/lib/siteContent';
+import HeroMedia from '@/components/site/HeroMedia.vue';
+import ProgrammeFeature from '@/components/site/ProgrammeFeature.vue';
+import {
+    programmes as flagshipProgrammes,
+    siteImages,
+    thematicAreas,
+} from '@/lib/siteContent';
 import { donate } from '@/routes';
 import about from '@/routes/about';
 import getInvolved from '@/routes/get-involved';
 import resources from '@/routes/resources';
 import work from '@/routes/work';
+import type { AddedProgramme, MediaItem } from '@/types';
+
+const props = defineProps<{
+    /** Gallery items chosen to show in the hero. */
+    heroMedia: MediaItem[];
+    /** Programmes added after the flagship ones. */
+    programmes: AddedProgramme[];
+}>();
 
 const page = usePage();
 const hasSocialLinks = computed(
     () => Object.keys(page.props.site.social).length > 0,
 );
 
-const atAGlance = [
+const programmeCount = computed(() => 2 + props.programmes.length);
+
+const atAGlance = computed(() => [
     {
         value: '7',
         unit: 'years',
@@ -38,11 +55,14 @@ const atAGlance = [
         label: 'Interconnected thematic areas across health and development',
     },
     {
-        value: '2',
+        value: String(programmeCount.value),
         unit: 'programmes',
-        label: 'Show Up Ready to Learn (SURL) and the Safe Housing Programme',
+        label:
+            programmeCount.value === 2
+                ? 'Show Up Ready to Learn (SURL) and the Safe Housing Programme'
+                : 'Including Show Up Ready to Learn (SURL) and the Safe Housing Programme',
     },
-];
+]);
 
 const approachSteps = [
     'Identify needs',
@@ -73,7 +93,7 @@ const partnerTypes = [
     'Development partners',
 ];
 
-const [surl, safeHousing] = programmes;
+const [surl, safeHousing] = flagshipProgrammes;
 </script>
 
 <template>
@@ -85,17 +105,22 @@ const [surl, safeHousing] = programmes;
     </Head>
 
     <div>
-        <!-- 1. Hero -->
-        <section class="bg-brand-900 lg:grid lg:min-h-[42rem] lg:grid-cols-12">
+        <!--
+            1. Hero: the thematic areas taking turns, unless an admin has
+            chosen gallery photos or videos for the hero instead.
+        -->
+        <ThematicHeroCarousel
+            v-if="heroMedia.length === 0"
+            :areas="thematicAreas"
+        />
+        <section
+            v-else
+            class="bg-brand-900 lg:grid lg:min-h-[42rem] lg:grid-cols-12"
+        >
             <div
                 class="relative min-h-[19rem] sm:min-h-[26rem] lg:order-2 lg:col-span-7"
             >
-                <img
-                    :src="siteImages.hero.src"
-                    :alt="siteImages.hero.alt"
-                    class="absolute inset-0 size-full object-cover object-[50%_22%]"
-                    fetchpriority="high"
-                />
+                <HeroMedia :items="heroMedia" :fallback="siteImages.hero" />
             </div>
             <div
                 class="relative flex items-center border-t-[6px] border-sun-400 px-5 py-12 text-white sm:px-10 sm:py-16 lg:col-span-5 lg:border-t-0 lg:py-20 lg:pr-12 lg:pl-[max(2rem,calc((100vw-80rem)/2+2rem))]"
@@ -144,13 +169,13 @@ const [surl, safeHousing] = programmes;
                         >
                             Explore Our Work
                         </SiteButton>
-                        <SiteButton
+                        <!-- <SiteButton
                             :href="donate.url()"
                             variant="ghostLight"
                             size="lg"
                         >
                             Support CHICD
-                        </SiteButton>
+                        </SiteButton> -->
                     </div>
                 </div>
             </div>
@@ -357,6 +382,13 @@ const [surl, safeHousing] = programmes;
                             {{ safeHousing.cta }}
                         </SiteButton>
                     </FeatureSplit>
+
+                    <ProgrammeFeature
+                        v-for="(programme, index) in programmes"
+                        :key="programme.id"
+                        :programme="programme"
+                        :variant="index % 2 === 0 ? 'cream' : 'brand'"
+                    />
                 </div>
 
                 <div class="mt-10">

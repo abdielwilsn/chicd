@@ -39,4 +39,14 @@ enum PublicationCategory: string
     {
         return [self::AnnualReport, self::FinancialReport, self::Governance];
     }
+
+    /**
+     * Categories listed in the Research & Insights knowledge hub.
+     *
+     * @return list<self>
+     */
+    public static function research(): array
+    {
+        return [self::Research, self::PolicyBrief, self::Evaluation, self::Toolkit];
+    }
 }

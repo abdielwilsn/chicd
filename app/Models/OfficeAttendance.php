@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\HasRecordChanges;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use Database\Factories\OfficeAttendanceFactory;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
  * One office working session, from Clock In to Clock Out.
@@ -54,7 +56,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class OfficeAttendance extends Model
 {
     /** @use HasFactory<OfficeAttendanceFactory> */
-    use HasFactory;
+    use HasFactory, HasRecordChanges;
 
     /**
      * Whether the staff member has not clocked out yet.
@@ -108,6 +110,16 @@ class OfficeAttendance extends Model
     public function office(): BelongsTo
     {
         return $this->belongsTo(Office::class);
+    }
+
+    /**
+     * Staff requests to correct this record.
+     *
+     * @return MorphMany<CorrectionRequest, $this>
+     */
+    public function correctionRequests(): MorphMany
+    {
+        return $this->morphMany(CorrectionRequest::class, 'correctable');
     }
 
     /**

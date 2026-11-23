@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
+import { Search, SearchX } from '@lucide/vue';
+import { watchDebounced } from '@vueuse/core';
+import { computed, reactive } from 'vue';
+import EmptyState from '@/components/site/EmptyState.vue';
 import PageHeader from '@/components/site/PageHeader.vue';
 import PublicationLibrary from '@/components/site/PublicationLibrary.vue';
 import SiteButton from '@/components/site/SiteButton.vue';
@@ -11,9 +15,50 @@ import type { Publication, PublicationGroup } from '@/types';
 type Props = {
     featuredAnnualReport: Publication | null;
     groups: PublicationGroup[];
+    filters: { search: string; category: string | null; year: number | null };
+    categoryOptions: { value: string; label: string }[];
+    yearOptions: number[];
 };
 
-defineProps<Props>();
+const props = defineProps<Props>();
+
+const filters = reactive({
+    search: props.filters.search,
+    category: props.filters.category ?? '',
+    year: props.filters.year ? String(props.filters.year) : '',
+});
+
+const isFiltered = computed(
+    () =>
+        !!(
+            props.filters.search ||
+            props.filters.category ||
+            props.filters.year
+        ),
+);
+
+function applyFilters(): void {
+    router.get(
+        resources.publications.url({
+            query: {
+                search: filters.search.trim() || undefined,
+                category: filters.category || undefined,
+                year: filters.year || undefined,
+            },
+        }),
+        {},
+        { preserveState: true, preserveScroll: true, replace: true },
+    );
+}
+
+function clearFilters(): void {
+    filters.search = '';
+    filters.category = '';
+    filters.year = '';
+    applyFilters();
+}
+
+watchDebounced(() => filters.search, applyFilters, { debounce: 350 });
 </script>
 
 <template>
@@ -39,7 +84,92 @@ defineProps<Props>();
 
         <section class="py-16 sm:py-20">
             <div class="site-container">
+                <form
+                    role="search"
+                    aria-label="Search publications"
+                    class="mb-12 grid gap-4 border-t-[5px] border-sun-400 bg-cream p-5 sm:grid-cols-[minmax(0,1fr)_14rem_9rem_auto] sm:items-end sm:p-6"
+                    @submit.prevent="applyFilters"
+                >
+                    <div>
+                        <label for="publication-search" class="site-label-text"
+                            >Search</label
+                        >
+                        <div class="relative">
+                            <Search
+                                class="pointer-events-none absolute top-1/2 left-3.5 size-5 -translate-y-1/2 text-stone-500"
+                            />
+                            <input
+                                id="publication-search"
+                                v-model="filters.search"
+                                type="search"
+                                maxlength="100"
+                                placeholder="Title or topic"
+                                class="site-input pl-11"
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <label
+                            for="publication-category"
+                            class="site-label-text"
+                            >Type</label
+                        >
+                        <select
+                            id="publication-category"
+                            v-model="filters.category"
+                            class="site-input"
+                            @change="applyFilters"
+                        >
+                            <option value="">All types</option>
+                            <option
+                                v-for="option in categoryOptions"
+                                :key="option.value"
+                                :value="option.value"
+                            >
+                                {{ option.label }}
+                            </option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="publication-year" class="site-label-text"
+                            >Year</label
+                        >
+                        <select
+                            id="publication-year"
+                            v-model="filters.year"
+                            class="site-input"
+                            @change="applyFilters"
+                        >
+                            <option value="">Any year</option>
+                            <option
+                                v-for="year in yearOptions"
+                                :key="year"
+                                :value="String(year)"
+                            >
+                                {{ year }}
+                            </option>
+                        </select>
+                    </div>
+                    <SiteButton
+                        v-if="isFiltered"
+                        variant="link"
+                        class="sm:mb-3"
+                        @click="clearFilters"
+                        >Clear</SiteButton
+                    >
+                </form>
+
+                <EmptyState
+                    v-if="isFiltered && !groups.length"
+                    :icon="SearchX"
+                    title="No documents match your search"
+                >
+                    Try a different word, or clear the filters to see
+                    everything.
+                </EmptyState>
+
                 <PublicationLibrary
+                    v-else
                     :featured-annual-report="featuredAnnualReport"
                     :groups="groups"
                 >

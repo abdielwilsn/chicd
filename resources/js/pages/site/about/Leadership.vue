@@ -7,6 +7,12 @@ import SiteButton from '@/components/site/SiteButton.vue';
 import about from '@/routes/about';
 import getInvolved from '@/routes/get-involved';
 import policies from '@/routes/policies';
+import type { TeamSectionGroup } from '@/types';
+
+defineProps<{
+    /** The people listed on the page, grouped by section. */
+    teamSections: TeamSectionGroup[];
+}>();
 
 const teams = [
     'Programme and partnership coordination',
@@ -104,6 +110,60 @@ const expertise = [
                     >
                     {{ expertise.join(' · ') }}
                 </p>
+            </div>
+        </section>
+
+        <section
+            v-for="group in teamSections"
+            :key="group.section"
+            class="border-t border-stone-200 py-20 sm:py-24"
+            :aria-labelledby="`team-${group.section}`"
+        >
+            <div class="site-container">
+                <p class="site-label mb-5">Meet the people</p>
+                <h2 :id="`team-${group.section}`" class="site-heading">
+                    {{ group.label }}
+                </h2>
+                <ul
+                    class="mt-12 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3"
+                >
+                    <li
+                        v-for="member in group.members"
+                        :key="member.id"
+                        class="border-t-[5px] border-brand-600 pt-6"
+                    >
+                        <img
+                            v-if="member.photo_url"
+                            :src="member.photo_url"
+                            :alt="`Photograph of ${member.name}`"
+                            loading="lazy"
+                            class="aspect-square w-full max-w-[16rem] object-cover"
+                        />
+                        <div
+                            v-else
+                            class="flex aspect-square w-full max-w-[16rem] items-center justify-center bg-cream font-display text-6xl font-extrabold text-brand-700"
+                            aria-hidden="true"
+                        >
+                            {{ member.initials }}
+                        </div>
+                        <h3
+                            class="mt-5 font-heading text-xl leading-snug font-bold text-ink"
+                        >
+                            {{ member.name }}
+                        </h3>
+                        <p
+                            class="mt-1 font-display text-[1rem] font-bold tracking-[0.08em] text-sun-700 uppercase"
+                        >
+                            {{ member.position }}
+                        </p>
+                        <p
+                            v-if="member.bio"
+                            class="mt-3 leading-relaxed whitespace-pre-line text-stone-700"
+                        >
+                            {{ member.bio }}
+                        </p>
+                    </li>
+                </ul>
             </div>
         </section>
 

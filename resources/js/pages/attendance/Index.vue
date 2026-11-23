@@ -1,14 +1,32 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import { CalendarX2, ChevronLeft, ChevronRight } from '@lucide/vue';
-import { computed } from 'vue';
+import {
+    CalendarPlus,
+    CalendarX2,
+    ChevronLeft,
+    ChevronRight,
+    MessageSquareWarning,
+} from '@lucide/vue';
+import { computed, ref } from 'vue';
 import SiteButton from '@/components/site/SiteButton.vue';
 import AttendanceRecordList from '@/components/staff/AttendanceRecordList.vue';
+import CorrectionRequestDialog from '@/components/staff/CorrectionRequestDialog.vue';
+import DownloadLinks from '@/components/staff/DownloadLinks.vue';
 import PortalEmptyState from '@/components/staff/PortalEmptyState.vue';
 import PortalPageHeader from '@/components/staff/PortalPageHeader.vue';
+import StatusBadge from '@/components/staff/StatusBadge.vue';
 import { formatMinutes } from '@/lib/duration';
 import { index } from '@/routes/attendance';
-import type { FieldActivity, OfficeAttendance } from '@/types';
+import { download } from '@/routes/attendance/timesheet';
+import AttendanceSummaryPanel from '@/components/staff/AttendanceSummaryPanel.vue';
+import type {
+    AttendanceSummary,
+    CorrectableRecord,
+    CorrectionRequest,
+    FieldActivity,
+    OfficeAttendance,
+    TimesheetStatusValue,
+} from '@/types';
 
 defineOptions({
     layout: {
@@ -38,7 +56,27 @@ const props = defineProps<{
         officeDays: number;
         fieldDays: number;
     };
+    attendance: AttendanceSummary;
+    lateAfter: string;
+    timesheet: {
+        status: TimesheetStatusValue;
+        label: string;
+        approvedAt: string | null;
+        approvedBy: string | null;
+    };
+    correctionRequests: CorrectionRequest[];
+    today: string;
 }>();
+
+const correctionOpen = ref(false);
+const correctionRecord = ref<CorrectableRecord | null>(null);
+
+function requestCorrection(record: CorrectableRecord | null): void {
+    correctionRecord.value = record;
+    correctionOpen.value = true;
+}
+
+const isApproved = computed(() => props.timesheet.status === 'approved');
 
 const figures = computed(() => [
     {
@@ -137,7 +175,100 @@ const figures = computed(() => [
             </div>
         </section>
 
+        <section class="border-b border-border bg-secondary/60">
+            <div
+                class="portal-container flex flex-col gap-4 py-6 sm:flex-row sm:items-center sm:justify-between"
+            >
+                <div>
+                    <h2
+                        class="flex flex-wrap items-center gap-3 font-heading text-xl font-bold"
+                    >
+                        {{ monthLabel }} timesheet
+                        <StatusBadge
+                            :status="timesheet.status"
+                            :label="timesheet.label"
+                        />
+                    </h2>
+                    <p class="mt-1 text-muted-foreground">
+                        <template v-if="isApproved">
+                            Approved by
+                            {{ timesheet.approvedBy ?? 'an admin' }} on
+                            {{ timesheet.approvedAt }}.
+                        </template>
+                        <template v-else>
+                            Your timesheet is built from what you record. An
+                            admin approves it after the month ends.
+                        </template>
+                    </p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <DownloadLinks
+                        v-if="isApproved"
+                        :pdf-url="download.url({ month, format: 'pdf' })"
+                        :csv-url="download.url({ month, format: 'csv' })"
+                    />
+                    <SiteButton
+                        variant="outline"
+                        size="sm"
+                        data-test="report-missing-record"
+                        @click="requestCorrection(null)"
+                    >
+                        <CalendarPlus />
+                        Report a missing record
+                    </SiteButton>
+                </div>
+            </div>
+        </section>
+
         <div class="portal-container space-y-10 py-8 sm:py-10">
+            <AttendanceSummaryPanel
+                :attendance="attendance"
+                :start-time-label="lateAfter"
+            />
+
+            <section v-if="correctionRequests.length" class="space-y-3">
+                <h2
+                    class="flex items-center gap-2 font-heading text-xl font-bold"
+                >
+                    <MessageSquareWarning
+                        class="size-5 text-brand-600 dark:text-brand-300"
+                    />
+                    Your correction requests
+                </h2>
+                <ul
+                    class="divide-y divide-border border-y border-border bg-card"
+                >
+                    <li
+                        v-for="request in correctionRequests"
+                        :key="request.id"
+                        class="space-y-1.5 px-4 py-4 sm:px-5"
+                    >
+                        <div class="flex flex-wrap items-center gap-2">
+                            <StatusBadge
+                                :status="request.status"
+                                :label="request.status_label"
+                            />
+                            <span class="font-heading font-bold">{{
+                                request.work_date_label
+                            }}</span>
+                            <span class="text-muted-foreground"
+                                >· {{ request.record }}</span
+                            >
+                        </div>
+                        <p class="leading-relaxed">{{ request.details }}</p>
+                        <p
+                            v-if="request.resolution_note"
+                            class="border-l-4 border-brand-600 bg-brand-50 px-3 py-2 text-[0.95rem] dark:bg-brand-950/60"
+                        >
+                            <span class="font-semibold"
+                                >{{ request.resolved_by ?? 'Admin' }}:</span
+                            >
+                            {{ request.resolution_note }}
+                        </p>
+                    </li>
+                </ul>
+            </section>
+
             <section v-for="day in days" :key="day.date" class="space-y-3">
                 <h2 class="font-heading text-xl font-bold">
                     {{ day.label }}
@@ -145,6 +276,8 @@ const figures = computed(() => [
                 <AttendanceRecordList
                     :office-attendances="day.officeAttendances"
                     :field-activities="day.fieldActivities"
+                    correctable
+                    @request-correction="requestCorrection"
                 />
             </section>
 
@@ -157,5 +290,11 @@ const figures = computed(() => [
                 here by day.
             </PortalEmptyState>
         </div>
+
+        <CorrectionRequestDialog
+            v-model:open="correctionOpen"
+            :record="correctionRecord"
+            :max-date="today"
+        />
     </div>
 </template>

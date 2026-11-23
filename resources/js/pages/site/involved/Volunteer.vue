@@ -3,11 +3,18 @@ import { Head } from '@inertiajs/vue3';
 import { BookOpen, Briefcase, Clock } from '@lucide/vue';
 import EnquiryForm from '@/components/site/EnquiryForm.vue';
 import FormPanel from '@/components/site/FormPanel.vue';
+import OpportunityCard from '@/components/site/OpportunityCard.vue';
 import PageHeader from '@/components/site/PageHeader.vue';
 import SectionIntro from '@/components/site/SectionIntro.vue';
 import SiteButton from '@/components/site/SiteButton.vue';
 import { siteImages } from '@/lib/siteContent';
 import getInvolved from '@/routes/get-involved';
+import type { Opportunity } from '@/types';
+
+defineProps<{
+    /** Open volunteer roles. */
+    opportunities: Opportunity[];
+}>();
 
 const contributions = [
     {
@@ -96,6 +103,43 @@ const areasOfInterest = [
                         <p class="mt-3 leading-relaxed text-stone-700">
                             {{ item.description }}
                         </p>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <section
+            v-if="opportunities.length"
+            class="border-t border-stone-200 py-20 sm:py-24"
+        >
+            <div class="site-container">
+                <div
+                    class="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between"
+                >
+                    <SectionIntro
+                        eyebrow="Open roles"
+                        title="Volunteer opportunities"
+                    >
+                        <p>
+                            Roles we are recruiting volunteers for now. You can
+                            also apply below to tell us where you would like to
+                            help.
+                        </p>
+                    </SectionIntro>
+                    <SiteButton
+                        :href="getInvolved.opportunities.url()"
+                        variant="outline"
+                        class="self-start lg:self-auto"
+                    >
+                        All Opportunities
+                    </SiteButton>
+                </div>
+                <ul class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    <li
+                        v-for="opportunity in opportunities"
+                        :key="opportunity.id"
+                    >
+                        <OpportunityCard :opportunity="opportunity" />
                     </li>
                 </ul>
             </div>

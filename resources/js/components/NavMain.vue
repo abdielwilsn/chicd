@@ -10,9 +10,13 @@ import {
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import type { NavItem } from '@/types';
 
-defineProps<{
-    items: NavItem[];
-}>();
+withDefaults(
+    defineProps<{
+        items: NavItem[];
+        label?: string;
+    }>(),
+    { label: 'My work' },
+);
 
 const { isCurrentUrl } = useCurrentUrl();
 </script>
@@ -22,7 +26,7 @@ const { isCurrentUrl } = useCurrentUrl();
         <SidebarGroupLabel
             class="font-display text-[0.8rem] font-bold tracking-[0.14em] text-sun-300 uppercase"
         >
-            My work
+            {{ label }}
         </SidebarGroupLabel>
         <SidebarMenu class="gap-1">
             <SidebarMenuItem v-for="item in items" :key="item.title">

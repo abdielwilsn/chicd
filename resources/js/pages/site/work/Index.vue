@@ -5,14 +5,27 @@ import CallToAction from '@/components/site/CallToAction.vue';
 import EmptyState from '@/components/site/EmptyState.vue';
 import FeatureSplit from '@/components/site/FeatureSplit.vue';
 import PageHeader from '@/components/site/PageHeader.vue';
+import PostCard from '@/components/site/PostCard.vue';
+import ProgrammeFeature from '@/components/site/ProgrammeFeature.vue';
 import SectionIntro from '@/components/site/SectionIntro.vue';
 import SiteButton from '@/components/site/SiteButton.vue';
-import { programmes, siteImages, thematicAreas } from '@/lib/siteContent';
+import {
+    programmes as flagshipProgrammes,
+    siteImages,
+    thematicAreas,
+} from '@/lib/siteContent';
 import getInvolved from '@/routes/get-involved';
 import resources from '@/routes/resources';
 import work from '@/routes/work';
+import type { AddedProgramme, Post } from '@/types';
 
-const [surl, safeHousing] = programmes;
+defineProps<{
+    /** Programmes added after the flagship ones. */
+    programmes: AddedProgramme[];
+    latestPosts: Post[];
+}>();
+
+const [surl, safeHousing] = flagshipProgrammes;
 </script>
 
 <template>
@@ -380,6 +393,13 @@ const [surl, safeHousing] = programmes;
                             </SiteButton>
                         </div>
                     </FeatureSplit>
+
+                    <ProgrammeFeature
+                        v-for="(programme, index) in programmes"
+                        :key="programme.id"
+                        :programme="programme"
+                        :variant="index % 2 === 0 ? 'cream' : 'brand'"
+                    />
                 </div>
             </div>
         </section>
@@ -399,7 +419,22 @@ const [surl, safeHousing] = programmes;
                         thematic areas.
                     </p>
                 </SectionIntro>
+                <template v-if="latestPosts.length">
+                    <ul class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        <li v-for="post in latestPosts" :key="post.id">
+                            <PostCard :post="post" />
+                        </li>
+                    </ul>
+                    <SiteButton
+                        :href="resources.news.url()"
+                        variant="outline"
+                        class="mt-10"
+                    >
+                        View All Updates
+                    </SiteButton>
+                </template>
                 <EmptyState
+                    v-else
                     :icon="Newspaper"
                     title="Programme updates will be shared here"
                     class="mt-10"

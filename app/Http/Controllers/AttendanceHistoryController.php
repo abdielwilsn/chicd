@@ -2,111 +2,76 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Timesheets\BuildMonthlyTimesheet;
+use App\Actions\Timesheets\SummariseAttendance;
+use App\Concerns\ResolvesRequestedMonth;
+use App\Enums\TimesheetStatus;
+use App\Http\Resources\CorrectionRequestResource;
 use App\Http\Resources\FieldActivityResource;
 use App\Http\Resources\OfficeAttendanceResource;
-use App\Models\FieldActivity;
-use App\Models\OfficeAttendance;
-use Carbon\CarbonImmutable;
+use App\Models\Timesheet;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class AttendanceHistoryController extends Controller
 {
+    use ResolvesRequestedMonth;
+
     /**
      * Show the staff member's own office sessions and field activities for
-     * one month, grouped by day.
-     *
-     * Office time and field time are totalled separately: how overlapping
-     * office and field time count towards hours is a timesheet rule CHICD
-     * has not set yet.
+     * one month, grouped by day, with the month's timesheet status and any
+     * correction requests they have made.
      */
-    public function index(Request $request): Response
+    public function index(Request $request, BuildMonthlyTimesheet $buildTimesheet, SummariseAttendance $summariseAttendance): Response
     {
-        $timezone = config('chicd.timezone');
-        $month = $this->requestedMonth($request->string('month')->toString(), $timezone);
-        $nextMonth = $month->addMonth();
+        $month = $this->requestedMonth($request->string('month')->toString());
         $user = $request->user();
-
-        $officeAttendances = $user->officeAttendances()
-            ->startedBetween($month, $nextMonth)
-            ->with('office')
-            ->oldest('clocked_in_at')
-            ->oldest('id')
-            ->get();
-
-        $fieldActivities = $user->fieldActivities()
-            ->startedBetween($month, $nextMonth)
-            ->oldest('started_at')
-            ->oldest('id')
-            ->get();
-
-        $officeByDay = $officeAttendances->groupBy(fn (OfficeAttendance $attendance) => $attendance->clocked_in_at->setTimezone($timezone)->toDateString());
-        $fieldByDay = $fieldActivities->groupBy(fn (FieldActivity $activity) => $activity->started_at->setTimezone($timezone)->toDateString());
-
-        $days = $officeByDay->keys()
-            ->merge($fieldByDay->keys())
-            ->unique()
-            ->sortDesc()
-            ->map(fn (string $date) => [
-                'date' => $date,
-                'label' => CarbonImmutable::parse($date, $timezone)->format('l j F'),
-                'officeAttendances' => OfficeAttendanceResource::collection($officeByDay->get($date, collect()))->resolve(),
-                'fieldActivities' => FieldActivityResource::collection($fieldByDay->get($date, collect()))->resolve(),
-            ])
-            ->values()
-            ->all();
-
-        $currentMonth = now($timezone)->startOfMonth();
+        $timesheet = $buildTimesheet->handle($user, $month);
+        $review = $user->timesheets()->forMonth($month)->with('approver')->first();
 
         return Inertia::render('attendance/Index', [
-            'month' => $month->format('Y-m'),
-            'monthLabel' => $month->format('F Y'),
-            'previousMonth' => $month->subMonth()->format('Y-m'),
-            'nextMonth' => $month->lessThan($currentMonth) ? $nextMonth->format('Y-m') : null,
-            'days' => $days,
+            ...$this->monthNavigation($month),
+            'days' => collect($timesheet['days'])
+                ->reverse()
+                ->map(fn (array $day) => [
+                    'date' => $day['date'],
+                    'label' => $day['label'],
+                    'officeAttendances' => OfficeAttendanceResource::collection($day['officeAttendances'])->resolve(),
+                    'fieldActivities' => FieldActivityResource::collection($day['fieldActivities'])->resolve(),
+                ])
+                ->values()
+                ->all(),
             'totals' => [
-                'officeMinutes' => $this->closedMinutes($officeAttendances, 'clocked_in_at', 'clocked_out_at'),
-                'fieldMinutes' => $this->closedMinutes($fieldActivities, 'started_at', 'ended_at'),
-                'officeDays' => $officeByDay->count(),
-                'fieldDays' => $fieldByDay->count(),
+                'officeMinutes' => $timesheet['totals']['officeMinutes'],
+                'fieldMinutes' => $timesheet['totals']['fieldMinutes'],
+                'officeDays' => $timesheet['totals']['officeDays'],
+                'fieldDays' => $timesheet['totals']['fieldDays'],
             ],
+            'attendance' => $summariseAttendance->handle($user, $month, $timesheet),
+            'lateAfter' => SummariseAttendance::lateAfterLabel(),
+            'timesheet' => $this->timesheetStatus($review),
+            'today' => now(config('chicd.timezone'))->toDateString(),
+            'correctionRequests' => CorrectionRequestResource::collection(
+                $user->correctionRequests()->forMonth($month)->with('correctable')->latest()->latest('id')->get()
+            )->resolve(),
         ]);
     }
 
     /**
-     * The first moment of the requested month (YYYY-MM) in the organisation
-     * timezone, falling back to the current month for a missing, malformed
-     * or future month.
-     */
-    private function requestedMonth(string $requested, string $timezone): CarbonImmutable
-    {
-        $currentMonth = now($timezone)->startOfMonth();
-
-        if (preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $requested) !== 1) {
-            return $currentMonth;
-        }
-
-        $month = CarbonImmutable::createFromFormat('!Y-m', $requested, $timezone);
-
-        return $month->greaterThan($currentMonth) ? $currentMonth : $month;
-    }
-
-    /**
-     * Total minutes across records that have both a start and an end.
+     * The month's review status as shown to the staff member.
      *
-     * @param  iterable<OfficeAttendance|FieldActivity>  $records
+     * @return array{status: string, label: string, approvedAt: string|null, approvedBy: string|null}
      */
-    private function closedMinutes(iterable $records, string $startColumn, string $endColumn): int
+    private function timesheetStatus(?Timesheet $review): array
     {
-        $minutes = 0;
+        $status = $review->status ?? TimesheetStatus::Pending;
 
-        foreach ($records as $record) {
-            if ($record->{$endColumn} !== null) {
-                $minutes += (int) $record->{$startColumn}->diffInMinutes($record->{$endColumn});
-            }
-        }
-
-        return $minutes;
+        return [
+            'status' => $status->value,
+            'label' => $status->label(),
+            'approvedAt' => $review?->isApproved() ? $review->approved_at?->setTimezone(config('chicd.timezone'))->format('j F Y') : null,
+            'approvedBy' => $review?->isApproved() ? $review->approver?->name : null,
+        ];
     }
 }

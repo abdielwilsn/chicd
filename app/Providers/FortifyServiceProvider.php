@@ -4,12 +4,16 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Http\Middleware\EnsureAccountIsActive;
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
@@ -41,6 +45,28 @@ class FortifyServiceProvider extends ServiceProvider
     {
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::createUsersUsing(CreateNewUser::class);
+        Fortify::authenticateUsing($this->authenticateActiveStaff(...));
+    }
+
+    /**
+     * Fortify's usual email and password check, except that a deactivated
+     * account is refused with a message saying so. The message is only shown
+     * once the password is right, so it does not reveal which addresses have
+     * accounts.
+     */
+    private function authenticateActiveStaff(Request $request): ?User
+    {
+        $user = User::query()->where(Fortify::username(), $request->string(Fortify::username())->toString())->first();
+
+        if ($user === null || ! Hash::check($request->string('password')->toString(), $user->password)) {
+            return null;
+        }
+
+        if (! $user->isActive()) {
+            throw ValidationException::withMessages([Fortify::username() => EnsureAccountIsActive::MESSAGE]);
+        }
+
+        return $user;
     }
 
     /**

@@ -2,22 +2,21 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
-        $this->call([StaffSeeder::class, OfficeSeeder::class]);
+        $this->call([OfficeSeeder::class]);
 
+        // Test accounts with the password "password" must never exist on a live
+        // server. Create real accounts with `php artisan staff:create`.
         if (app()->isLocal()) {
-            $this->call(PublicationSeeder::class);
+            $this->call([StaffSeeder::class, PublicationSeeder::class, WebsiteContentSeeder::class]);
         }
     }
 }
