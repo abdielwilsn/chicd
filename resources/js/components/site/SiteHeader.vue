@@ -2,6 +2,7 @@
 import { Link, router, usePage } from '@inertiajs/vue3';
 import { ChevronDown, ChevronRight, Menu } from '@lucide/vue';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import LanguagePicker from '@/components/site/LanguagePicker.vue';
 import SiteButton from '@/components/site/SiteButton.vue';
 import SiteLogo from '@/components/site/SiteLogo.vue';
 import {
@@ -379,6 +380,7 @@ onBeforeUnmount(() => {
                             >
                                 Donate to CHICD
                             </SiteButton>
+                            <LanguagePicker class="mt-6" />
                             <Link
                                 :href="login()"
                                 class="mt-6 block text-sm text-stone-500 hover:text-brand-700"

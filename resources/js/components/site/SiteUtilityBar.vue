@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
 import { Mail, MapPin } from '@lucide/vue';
+import LanguagePicker from '@/components/site/LanguagePicker.vue';
 import SocialLinks from '@/components/site/SocialLinks.vue';
 import { login } from '@/routes';
 import policies from '@/routes/policies';
@@ -29,6 +30,7 @@ const contact = usePage().props.site.contact;
                 </li>
             </ul>
             <div class="flex items-center gap-5">
+                <LanguagePicker inverted />
                 <Link :href="policies.feedback()" class="hover:text-white"
                     >Report a concern</Link
                 >

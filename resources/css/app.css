@@ -303,3 +303,26 @@
         @apply mb-1.5 block font-body text-[0.95rem] font-semibold text-foreground;
     }
 }
+
+/*
+  Google's website translator (resources/js/lib/googleTranslate.ts). Our own
+  language picker replaces its banner, which would otherwise cover the
+  header and push the page down, and its hover pop-ups and highlights. The
+  class names are Google's and may change.
+*/
+body {
+    top: 0 !important;
+}
+
+.skiptranslate > iframe,
+iframe.goog-te-banner-frame,
+.VIpgJd-ZVi9od-ORHb-OEVmcd,
+#goog-gt-tt,
+.VIpgJd-yAWNEb-L7lbkb {
+    display: none !important;
+}
+
+.VIpgJd-yAWNEb-VIpgJd-fmcmS-sn54Q {
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
