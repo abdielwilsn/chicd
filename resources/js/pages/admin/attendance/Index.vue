@@ -134,7 +134,7 @@ defineProps<{
                             :class="
                                 row.mode === 'Office'
                                     ? 'text-sun-700 dark:text-sun-300'
-                                    : 'text-lagoon-700 dark:text-lagoon-100'
+                                    : 'text-navy-700 dark:text-navy-100'
                             "
                         >
                             <Building2

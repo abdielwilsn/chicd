@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Programme;
 use Inertia\Testing\AssertableInertia as Assert;
 
 test('each public page renders its page component', function (string $routeName, string $component) {
@@ -52,5 +53,23 @@ test('only configured social networks are shared with the website', function () 
 
     $response->assertInertia(fn (Assert $page) => $page
         ->where('site.social', ['facebook' => 'https://facebook.com/chicd'])
+    );
+});
+
+test('published added programmes are shared in order for the Our Work menu', function () {
+    $second = Programme::factory()->create(['name' => 'Clean Water Programme', 'tagline' => 'Water for every school', 'sort_order' => 2]);
+    $first = Programme::factory()->create(['name' => 'Mobile Clinic Programme', 'tagline' => null, 'sort_order' => 1]);
+    Programme::factory()->unpublished()->create();
+
+    $response = $this->get(route('contact'));
+
+    $response->assertInertia(fn (Assert $page) => $page
+        ->has('site.programmes', 2)
+        ->where('site.programmes.0.title', 'Mobile Clinic Programme')
+        ->where('site.programmes.0.href', "/our-work/programmes/{$first->slug}")
+        ->where('site.programmes.0.description', null)
+        ->where('site.programmes.1.title', 'Clean Water Programme')
+        ->where('site.programmes.1.description', 'Water for every school')
+        ->where('site.programmes.1.image.alt', $second->image_alt)
     );
 });

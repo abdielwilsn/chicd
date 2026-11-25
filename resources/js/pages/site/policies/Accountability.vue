@@ -38,7 +38,7 @@ const policyPages = [
         title: 'Terms of Use',
         description: 'The terms that apply when you use this website.',
         href: policies.terms.url(),
-        accent: 'border-lagoon-600',
+        accent: 'border-navy-600',
     },
 ];
 </script>

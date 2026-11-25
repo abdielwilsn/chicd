@@ -52,7 +52,7 @@ const ways = [
         href: `${getInvolved.partnerships.url()}#research`,
         cta: 'Collaborate With Us',
         image: siteImages.research,
-        accent: 'border-lagoon-600',
+        accent: 'border-navy-600',
     },
     {
         title: 'Corporate & Institutional Partnerships',

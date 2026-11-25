@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Link, router } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3';
 import { ChevronDown, ChevronRight, Menu } from '@lucide/vue';
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import SiteButton from '@/components/site/SiteButton.vue';
 import SiteLogo from '@/components/site/SiteLogo.vue';
 import {
@@ -13,10 +13,16 @@ import {
 } from '@/components/ui/sheet';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import type { SiteNavGroup } from '@/lib/siteContent';
-import { donateLink, mainNavigation } from '@/lib/siteContent';
+import { donateLink, mainNavigationWithProgrammes } from '@/lib/siteContent';
 import { home, login } from '@/routes';
 
 const { isCurrentUrl, isCurrentOrParentUrl } = useCurrentUrl();
+
+const page = usePage();
+
+const mainNavigation = computed(() =>
+    mainNavigationWithProgrammes(page.props.site.programmes),
+);
 
 const openGroup = ref<string | null>(null);
 
@@ -167,7 +173,9 @@ onBeforeUnmount(() => {
                                             >
                                                 {{ item.title }}
                                             </p>
-                                            <ul>
+                                            <ul
+                                                class="max-h-[calc(100vh-14rem)] overflow-y-auto"
+                                            >
                                                 <li
                                                     v-for="(
                                                         child, index

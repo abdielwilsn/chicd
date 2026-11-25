@@ -88,11 +88,11 @@ const methods = [
                     </div>
                 </div>
                 <aside
-                    class="space-y-10 border-t-[6px] border-lagoon-600 bg-cream p-8 sm:p-10 lg:col-span-5"
+                    class="space-y-10 border-t-[6px] border-navy-600 bg-cream p-8 sm:p-10 lg:col-span-5"
                 >
                     <div>
                         <h2
-                            class="font-display text-xl font-bold tracking-[0.06em] text-lagoon-700 uppercase"
+                            class="font-display text-xl font-bold tracking-[0.06em] text-navy-700 uppercase"
                         >
                             Research interests
                         </h2>
@@ -100,7 +100,7 @@ const methods = [
                     </div>
                     <div>
                         <h2
-                            class="font-display text-xl font-bold tracking-[0.06em] text-lagoon-700 uppercase"
+                            class="font-display text-xl font-bold tracking-[0.06em] text-navy-700 uppercase"
                         >
                             How we generate evidence
                         </h2>

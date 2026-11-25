@@ -35,7 +35,7 @@ const categories = [
         title: 'Research & Insights',
         description:
             'Read articles, research commentary and evidence-informed perspectives on health, behaviour and community development.',
-        accent: 'border-lagoon-600',
+        accent: 'border-navy-600',
     },
     {
         title: 'News & Announcements',

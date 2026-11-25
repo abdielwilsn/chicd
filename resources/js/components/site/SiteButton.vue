@@ -32,7 +32,7 @@ const classes = computed(() =>
     ),
 );
 
-/** Text links end with a marigold chevron, in the manner of "Read more ›". */
+/** Text links end with an orange chevron, in the manner of "Read more ›". */
 const isTextLink = computed(
     () => props.variant === 'link' || props.variant === 'linkLight',
 );

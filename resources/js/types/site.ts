@@ -8,6 +8,15 @@ export type SiteProps = {
         address: string | null;
     };
     social: Partial<Record<'facebook' | 'instagram' | 'linkedin', string>>;
+    /** Published added programmes, as links for the Our Work menu. */
+    programmes: ProgrammeNavLink[];
+};
+
+export type ProgrammeNavLink = {
+    title: string;
+    href: string;
+    description: string | null;
+    image: { src: string; alt: string };
 };
 
 export type Publication = {
