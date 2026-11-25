@@ -10,9 +10,11 @@
 /*
   CHICD public website design tokens.
 
-  Forest green (brand) carries health, growth and Nigeria; marigold (sun) is
-  the action colour used for Donate and highlights; cream warms the page.
-  Lagoon, terracotta and olive give each thematic area its own colour.
+  The palette is built on CHICD's three official colours, each placed at the
+  shade the site uses most: green #2F772B is brand-700 (primary actions,
+  labels), orange #EE7408 is sun-400 (Donate and highlights) and blue
+  #022A5C is navy-700. Cream warms the page; navy, terracotta and olive give
+  each thematic area its own colour.
 
   Type: Barlow Condensed for slogans, buttons, labels and figures; Source
   Serif 4 for headings; Source Sans 3 for reading text.
@@ -23,32 +25,41 @@
     --font-display:
         'Barlow Condensed', 'Arial Narrow', ui-sans-serif, sans-serif;
 
-    --color-brand-50: #eef5f0;
-    --color-brand-100: #d5e8dc;
-    --color-brand-200: #abd1b9;
-    --color-brand-300: #7bb393;
-    --color-brand-400: #4d926f;
-    --color-brand-500: #2f7655;
-    --color-brand-600: #216245;
-    --color-brand-700: #1a5139;
-    --color-brand-800: #15422f;
-    --color-brand-900: #103526;
-    --color-brand-950: #0a2419;
+    --color-brand-50: #f1faf0;
+    --color-brand-100: #e1f3df;
+    --color-brand-200: #c7e7c3;
+    --color-brand-300: #a2d49d;
+    --color-brand-400: #7abb75;
+    --color-brand-500: #58a053;
+    --color-brand-600: #40873b;
+    --color-brand-700: #2f772b;
+    --color-brand-800: #1a5617;
+    --color-brand-900: #183f16;
+    --color-brand-950: #092408;
 
-    --color-sun-50: #fff8e8;
-    --color-sun-100: #feedc2;
-    --color-sun-200: #fdde8f;
-    --color-sun-300: #fbc954;
-    --color-sun-400: #f7b52c;
-    --color-sun-500: #e99c10;
-    --color-sun-600: #c27a0a;
-    --color-sun-700: #9a5b0d;
+    --color-sun-50: #fff4ef;
+    --color-sun-100: #ffe8da;
+    --color-sun-200: #ffcbad;
+    --color-sun-300: #fea570;
+    --color-sun-400: #ee7408;
+    --color-sun-500: #d76807;
+    --color-sun-600: #a95106;
+    --color-sun-700: #894004;
+    --color-sun-800: #713402;
+    --color-sun-900: #5a2700;
+    --color-sun-950: #3c1801;
 
-    --color-lagoon-50: #eef4f7;
-    --color-lagoon-100: #d4e5ec;
-    --color-lagoon-600: #2b6a86;
-    --color-lagoon-700: #22566d;
-    --color-lagoon-800: #1c4558;
+    --color-navy-50: #f2f7ff;
+    --color-navy-100: #e2eefe;
+    --color-navy-200: #cadefa;
+    --color-navy-300: #8fadd7;
+    --color-navy-400: #6388bc;
+    --color-navy-500: #426aa1;
+    --color-navy-600: #264d82;
+    --color-navy-700: #022a5c;
+    --color-navy-800: #001d46;
+    --color-navy-900: #001535;
+    --color-navy-950: #000c25;
 
     --color-terracotta-50: #fbf1ec;
     --color-terracotta-100: #f5dccf;
@@ -162,70 +173,70 @@
     --card-foreground: #1c2420;
     --popover: #ffffff;
     --popover-foreground: #1c2420;
-    --primary: #1a5139;
+    --primary: #2f772b;
     --primary-foreground: #ffffff;
     --secondary: #f6f0e3;
-    --secondary-foreground: #15422f;
+    --secondary-foreground: #1a5617;
     --muted: #f3eee2;
     --muted-foreground: #57534e;
-    --accent: #eef5f0;
-    --accent-foreground: #15422f;
+    --accent: #f1faf0;
+    --accent-foreground: #1a5617;
     --destructive: #b42318;
     --destructive-foreground: #ffffff;
     --border: #e7e5e4;
     --input: #d6d3d1;
-    --ring: #216245;
-    --chart-1: #1a5139;
-    --chart-2: #f7b52c;
-    --chart-3: #2b6a86;
+    --ring: #40873b;
+    --chart-1: #2f772b;
+    --chart-2: #ee7408;
+    --chart-3: #022a5c;
     --chart-4: #b4532f;
     --chart-5: #66782b;
     --radius: 0.25rem;
-    --sidebar-background: #0a2419;
-    --sidebar-foreground: #d5e8dc;
-    --sidebar-primary: #f7b52c;
-    --sidebar-primary-foreground: #0a2419;
-    --sidebar-accent: #15422f;
+    --sidebar-background: #092408;
+    --sidebar-foreground: #e1f3df;
+    --sidebar-primary: #ee7408;
+    --sidebar-primary-foreground: #092408;
+    --sidebar-accent: #1a5617;
     --sidebar-accent-foreground: #ffffff;
-    --sidebar-border: #15422f;
-    --sidebar-ring: #f7b52c;
-    --sidebar: #0a2419;
+    --sidebar-border: #1a5617;
+    --sidebar-ring: #ee7408;
+    --sidebar: #092408;
 }
 
 .dark {
-    --background: #08170f;
+    --background: #0c160b;
     --foreground: #f6f0e3;
-    --card: #0d2219;
+    --card: #142113;
     --card-foreground: #f6f0e3;
-    --popover: #0d2219;
+    --popover: #142113;
     --popover-foreground: #f6f0e3;
-    --primary: #7bb393;
-    --primary-foreground: #0a2419;
-    --secondary: #15422f;
+    --primary: #89b185;
+    --primary-foreground: #132312;
+    --secondary: #254023;
     --secondary-foreground: #f6f0e3;
-    --muted: #123024;
-    --muted-foreground: #abd1b9;
-    --accent: #15422f;
+    --muted: #1d2f1b;
+    --muted-foreground: #b3cfb0;
+    --accent: #254023;
     --accent-foreground: #f6f0e3;
     --destructive: #f97066;
-    --destructive-foreground: #0a2419;
-    --border: #1d4433;
-    --input: #2a5a44;
-    --ring: #7bb393;
-    --chart-1: #7bb393;
-    --chart-2: #f7b52c;
-    --chart-3: #6aa7c2;
+    --destructive-foreground: #132312;
+    --border: #2a4228;
+    --input: #3a5837;
+    --ring: #89b185;
+    --chart-1: #89b185;
+    --chart-2: #ee7408;
+    --chart-3: #8fadd7;
     --chart-4: #e08a66;
     --chart-5: #b4c46a;
-    --sidebar-background: #051209;
-    --sidebar-foreground: #d5e8dc;
-    --sidebar-primary: #f7b52c;
-    --sidebar-primary-foreground: #0a2419;
-    --sidebar-accent: #103526;
+    --sidebar-background: #071207;
+    --sidebar-foreground: #e1f3df;
+    --sidebar-primary: #ee7408;
+    --sidebar-primary-foreground: #132312;
+    --sidebar-accent: #1d341c;
     --sidebar-accent-foreground: #ffffff;
-    --sidebar-border: #103526;
-    --sidebar-ring: #f7b52c;
-    --sidebar: #051209;
+    --sidebar-border: #1d341c;
+    --sidebar-ring: #ee7408;
+    --sidebar: #071207;
 }
 
 @layer base {
@@ -266,7 +277,7 @@
         @apply mb-1.5 block font-body text-[0.95rem] font-semibold text-ink;
     }
 
-    /* A marigold brush stroke behind the lower half of a word. */
+    /* An orange brush stroke behind the lower half of a word. */
     .site-mark {
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 40' preserveAspectRatio='none'%3E%3Cpath d='M6 24c58-9 132-13 206-12 66 1 124 5 182 3l-3 13c-61 4-120 1-181 0-73-1-139 3-202 9z' fill='%23f7b52c'/%3E%3C/svg%3E");
         background-position: 0 88%;
@@ -291,4 +302,27 @@
     .portal-label-text {
         @apply mb-1.5 block font-body text-[0.95rem] font-semibold text-foreground;
     }
+}
+
+/*
+  Google's website translator (resources/js/lib/googleTranslate.ts). Our own
+  language picker replaces its banner, which would otherwise cover the
+  header and push the page down, and its hover pop-ups and highlights. The
+  class names are Google's and may change.
+*/
+body {
+    top: 0 !important;
+}
+
+.skiptranslate > iframe,
+iframe.goog-te-banner-frame,
+.VIpgJd-ZVi9od-ORHb-OEVmcd,
+#goog-gt-tt,
+.VIpgJd-yAWNEb-L7lbkb {
+    display: none !important;
+}
+
+.VIpgJd-yAWNEb-VIpgJd-fmcmS-sn54Q {
+    background-color: transparent !important;
+    box-shadow: none !important;
 }

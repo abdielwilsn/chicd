@@ -17,8 +17,9 @@ withDefaults(defineProps<Props>(), {
         <SiteLogoMark :inverted="inverted" class="size-11 sm:size-12" />
         <span class="flex flex-col">
             <span
-                class="font-display text-[1.9rem] leading-[0.85] font-extrabold tracking-[0.02em]"
+                class="notranslate font-display text-[1.9rem] leading-[0.85] font-extrabold tracking-[0.02em]"
                 :class="inverted ? 'text-white' : 'text-brand-900'"
+                translate="no"
                 >CHICD</span
             >
             <span

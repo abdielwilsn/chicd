@@ -1,7 +1,11 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import SiteFooter from '@/components/site/SiteFooter.vue';
 import SiteHeader from '@/components/site/SiteHeader.vue';
 import SiteUtilityBar from '@/components/site/SiteUtilityBar.vue';
+import { startGoogleTranslate } from '@/lib/googleTranslate';
+
+onMounted(startGoogleTranslate);
 </script>
 
 <template>

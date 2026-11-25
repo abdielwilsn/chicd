@@ -25,7 +25,7 @@ const partnershipTypes = [
         title: 'Research & Academic Collaboration',
         description:
             'Work with CHICD on community-based research, behavioural science, health innovation and evidence-informed interventions.',
-        accent: 'border-lagoon-600',
+        accent: 'border-navy-600',
     },
     {
         id: 'corporate',

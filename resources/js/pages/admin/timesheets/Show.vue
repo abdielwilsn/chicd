@@ -426,7 +426,7 @@ const figures = computed(() => [
                             class="flex flex-wrap items-center gap-x-3 gap-y-1"
                         >
                             <span
-                                class="flex items-center gap-1.5 font-display text-[0.85rem] font-bold tracking-[0.12em] text-lagoon-700 uppercase dark:text-lagoon-100"
+                                class="flex items-center gap-1.5 font-display text-[0.85rem] font-bold tracking-[0.12em] text-navy-700 uppercase dark:text-navy-100"
                             >
                                 <Route class="size-3.5" />
                                 Field

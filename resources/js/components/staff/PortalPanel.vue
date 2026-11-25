@@ -10,7 +10,7 @@ defineProps<Props>();
 </script>
 
 <!--
-    The portal version of the site's FormPanel: a white panel with a marigold
+    The portal version of the site's FormPanel: a white panel with an orange
     top rule and a soft shadow.
 -->
 <template>

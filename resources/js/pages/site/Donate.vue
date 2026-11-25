@@ -442,7 +442,7 @@ const impactAreas = [
                             class="border-l-4 border-terracotta-600 bg-cream p-4 text-[0.98rem] text-ink"
                             role="alert"
                         >
-                            {{ formError }}
+                            <span :key="formError">{{ formError }}</span>
                         </div>
 
                         <SiteButton
@@ -453,7 +453,7 @@ const impactAreas = [
                             :disabled="form.processing || paying"
                         >
                             <LockKeyhole />
-                            {{ submitLabel }}
+                            <span :key="submitLabel">{{ submitLabel }}</span>
                         </SiteButton>
 
                         <p

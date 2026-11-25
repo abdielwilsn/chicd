@@ -121,13 +121,7 @@ const journey = [
                             appropriate responses and strengthening their
                             ability to build better futures.
                         </blockquote>
-                        <figcaption
-                            class="mt-6 border-t border-stone-300 pt-4 leading-relaxed text-stone-600"
-                        >
-                            Although the organisation is formally young, years
-                            of practical community experience inform its
-                            founding vision.
-                        </figcaption>
+                        
                     </figure>
                 </aside>
             </div>

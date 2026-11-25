@@ -19,6 +19,7 @@ import getInvolved from '@/routes/get-involved';
 import policies from '@/routes/policies';
 import resources from '@/routes/resources';
 import work from '@/routes/work';
+import type { ProgrammeNavLink } from '@/types/site';
 
 export type SiteImage = {
     src: string;
@@ -238,6 +239,29 @@ export const mainNavigation: SiteNavGroup[] = [
     { title: 'Contact Us', href: contact.url() },
 ];
 
+/**
+ * The main navigation with the programmes added by admins listed under Our
+ * Work, after the flagship programmes.
+ */
+export function mainNavigationWithProgrammes(
+    addedProgrammes: ProgrammeNavLink[],
+): SiteNavGroup[] {
+    return mainNavigation.map((group) =>
+        group.href === work.index.url()
+            ? {
+                  ...group,
+                  children: [
+                      ...(group.children ?? []),
+                      ...addedProgrammes.map((programme) => ({
+                          ...programme,
+                          description: programme.description ?? undefined,
+                      })),
+                  ],
+              }
+            : group,
+    );
+}
+
 export const donateLink: SiteNavLink = { title: 'Donate', href: donate.url() };
 
 export const footerQuickLinks: SiteNavLink[] = [
@@ -320,9 +344,9 @@ export const thematicAreas: ThematicArea[] = [
         icon: Microscope,
         image: siteImages.research,
         tone: {
-            tile: 'bg-lagoon-700 text-white',
-            text: 'text-lagoon-700',
-            border: 'border-lagoon-600',
+            tile: 'bg-navy-700 text-white',
+            text: 'text-navy-700',
+            border: 'border-navy-600',
         },
     },
     {

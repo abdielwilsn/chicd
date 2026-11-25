@@ -2,7 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Programme;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -47,8 +49,32 @@ class HandleInertiaRequests extends Middleware
                 'tagline' => config('chicd.tagline'),
                 'contact' => config('chicd.contact'),
                 'social' => array_filter(config('chicd.social')),
+                'programmes' => fn (): array => $this->programmeLinks(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
+    }
+
+    /**
+     * Published added programmes, as links for the Our Work menu.
+     *
+     * @return list<array{title: string, href: string, description: string|null, image: array{src: string, alt: string}}>
+     */
+    protected function programmeLinks(): array
+    {
+        return Programme::query()
+            ->published()
+            ->ordered()
+            ->get(['name', 'slug', 'tagline', 'image_path', 'image_alt'])
+            ->map(fn (Programme $programme): array => [
+                'title' => $programme->name,
+                'href' => route('work.programme', $programme->slug, absolute: false),
+                'description' => $programme->tagline,
+                'image' => [
+                    'src' => Storage::disk('public')->url($programme->image_path),
+                    'alt' => $programme->image_alt ?? '',
+                ],
+            ])
+            ->all();
     }
 }
